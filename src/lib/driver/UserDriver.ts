@@ -1,8 +1,34 @@
-import { UserId } from "../domain/User";
+import axios, { AxiosResponse } from "axios";
 
 export class UserDriver {
-  findById(userId: number): UserJson {
-    throw Error("test");
+  async findById(userId: number): Promise<UserJson> {
+    const response: AxiosResponse = await axios.get(
+      `https://jsonplaceholder.typicode.com/users/${userId}`
+    );
+    const data = response.data;
+
+    const userJson = new UserJson(
+      data.id,
+      data.name,
+      data.username,
+      data.email,
+      new AddressJson(
+        data.address.street,
+        data.address.suite,
+        data.address.city,
+        data.address.zipcode,
+        new GeoJson(data.address.geo.lat, data.address.geo.lng) // Here is 'lng', not 'lug'
+      ),
+      data.phone,
+      data.website,
+      new CompanyJson(
+        data.company.name,
+        data.company.catchPhrase,
+        data.company.bs
+      )
+    );
+
+    return userJson;
   }
 }
 
